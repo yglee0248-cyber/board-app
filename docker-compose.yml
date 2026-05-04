@@ -1,15 +1,14 @@
-version: '3.8'
+version: "3.8"
 
 services:
-
   # ===== MySQL =====
   db:
     image: mysql:8.0
     container_name: board-db
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root1234
-      MYSQL_DATABASE: boarddb
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_CHARACTER_SET_SERVER: utf8mb4
       MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
     command:
@@ -19,12 +18,13 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql-data:/var/lib/mysql    # 데이터 영구 보존
-      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql   # 초기화 SQL
+      - mysql-data:/var/lib/mysql # 데이터 영구 보존
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql # 초기화 SQL
     networks:
       - board-network
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot1234"]
+      test:
+        ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot1234"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -43,12 +43,12 @@ services:
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}  
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "8080:8080"
     depends_on:
       db:
-        condition: service_healthy    # DB 헬스체크 통과 후 시작
+        condition: service_healthy # DB 헬스체크 통과 후 시작
     networks:
       - board-network
 
